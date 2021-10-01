@@ -1,7 +1,8 @@
 import { createUseStyles } from "react-jss";
 
+const useStyles = createUseStyles({});
+
 export default function Game() {
-    return (
-        <div></div>
-    )
+  const styles = useStyles();
+  return <div></div>;
 }
