@@ -1,5 +1,6 @@
-import { createUseStyles } from "react-jss";
 import { useMemo, useState } from "react";
+import { createUseStyles } from "react-jss";
+import CoordinateModal from "../../components/Modal/CoordinateModal";
 
 const SQUARES = new Array(6).fill("").map((_) => new Array(6).fill(""));
 const LETTERS = ["A", "B", "C", "D", "E", "F"];
@@ -24,11 +25,18 @@ const useStyles = createUseStyles({
     minHeight: "100vh",
   },
   coordinateBadge: {
+    alignItems: "center",
     background: "#FFFFFF",
     border: "2px solid #666666",
+    cursor: "pointer",
+    display: "flex",
+    flexDirection: "column",
     fontSize: "36px",
     fontWeight: 400,
+    justifyContent: "center",
     lineHeight: "44px",
+    padding: "6px",
+    textAlign: "center",
   },
   cta: {
     border: "1px solid #959595",
@@ -38,13 +46,15 @@ const useStyles = createUseStyles({
     marginTop: "114px",
     padding: "14px 26px",
   },
-  left: {
-    alignItems: "center",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    marginRight: "20px",
-    width: "100%",
+  dot: {
+    borderRadius: "50%",
+    height: "28px",
+    width: "28px",
+  },
+  enterCoordinates: {
+    fontSize: "14px",
+    fontWeight: 300,
+    lineHeight: "24px",
   },
   heading: {
     fontSize: "42px",
@@ -58,8 +68,24 @@ const useStyles = createUseStyles({
   },
   launchContainer: {
     background: "#C4C4C4",
+    display: "flex",
     marginTop: "4px",
     padding: "12px",
+  },
+  launchCTA: {
+    background: "#D4D4D4",
+    fontSize: "25px",
+    fontWeight: 400,
+    lineHeight: "30px",
+    padding: "18px 7px 21px 7px",
+  },
+  left: {
+    alignItems: "center",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    marginRight: "20px",
+    width: "100%",
   },
   moveContainer: {
     border: "2px solid #000000",
@@ -74,12 +100,6 @@ const useStyles = createUseStyles({
     alignItems: "center",
     display: "flex",
     marginTop: "1px",
-  },
-  selectedDot: {
-    background: "#C4C4C4",
-    borderRadius: "50%",
-    height: "28px",
-    width: "28px",
   },
   square: {
     alignItems: "center",
@@ -101,16 +121,37 @@ const useStyles = createUseStyles({
 
 export default function Game() {
   const [consoleMessages, setConsoleMessages] = useState(["ready"]);
-  const [coordinate, setCoordinate] = useState('');
+  const [coordinate, setCoordinate] = useState({ col: null, row: null });
   const [selected, setSelected] = useState({ end: null, front: null });
   const [showConsole, setShowConsole] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [usedCoordinates, setUsedCoordinates] = useState([]);
   const styles = useStyles();
 
   const bothSelected = useMemo(() => {
     return selected.end && selected.front;
   }, [selected]);
 
+  const coordinateSelected = useMemo(() => {
+    return coordinate.col && coordinate.row;
+  }, [coordinate]);
+
   const calculateValidPositions = () => {};
+
+  const launch = () => {
+    setCoordinate({ col: null, row: null });
+    setConsoleMessages([
+      ...consoleMessages,
+      `Launching ZKP ${coordinate.col}${coordinate.row}`,
+    ]);
+    const coordinateIndex = Number(
+      ([coordinate.col].toString().charCodeAt(0) - 65) + coordinate.row * 6
+    );
+    console.log('COORDINATE: ', coordinateIndex)
+    setUsedCoordinates(
+      [...usedCoordinates, coordinateIndex].sort((a, b) => b - a)
+    );
+  };
 
   const isSelected = (index) => {
     return index === selected.end || index === selected.front;
@@ -134,6 +175,8 @@ export default function Game() {
       });
     }
   };
+
+  console.log("USED COORDINATES: ", usedCoordinates);
 
   return (
     <div className={styles.container}>
@@ -178,7 +221,16 @@ export default function Game() {
                       style={{ cursor: !bothSelected ? "pointer" : "default" }}
                     >
                       {isSelected((index + 1) * 6 + index2) && (
-                        <div className={styles.selectedDot} />
+                        <div
+                          className={styles.dot}
+                          style={{ background: "#C4C4C4" }}
+                        />
+                      )}
+                      {usedCoordinates.includes((index + 1) * 6 + index2) && (
+                        <div
+                          className={styles.dot}
+                          style={{ background: "#F72A2A" }}
+                        />
                       )}
                     </div>
                   </>
@@ -223,11 +275,39 @@ export default function Game() {
                   <div style={{ marginTop: "15px" }}>{message}</div>
                 ))}
               </div>
-              <div className={styles.launchContainer}></div>
+              <div className={styles.launchContainer}>
+                <div
+                  className={styles.coordinateBadge}
+                  onClick={() => setShowModal(true)}
+                  style={{ marginRight: "10px" }}
+                >
+                  {coordinateSelected ? (
+                    <div>{`${coordinate.col}${coordinate.row}`}</div>
+                  ) : (
+                    <div className={styles.enterCoordinates}>ENTER COORDS</div>
+                  )}
+                </div>
+                <div
+                  className={styles.launchCTA}
+                  onClick={() => coordinateSelected && launch()}
+                  style={{
+                    cursor: coordinateSelected ? "pointe" : "default",
+                    opacity: coordinateSelected ? 1 : 0.3,
+                  }}
+                >
+                  Launch
+                </div>
+              </div>
             </>
           )}
         </div>
       </div>
+      <CoordinateModal
+        coordinate={coordinate}
+        onClose={() => setShowModal(false)}
+        open={showModal}
+        setCoordinate={setCoordinate}
+      />
     </div>
   );
 }
