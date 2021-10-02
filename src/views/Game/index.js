@@ -147,7 +147,6 @@ export default function Game() {
     const coordinateIndex = Number(
       ([coordinate.col].toString().charCodeAt(0) - 65) + coordinate.row * 6
     );
-    console.log('COORDINATE: ', coordinateIndex)
     setUsedCoordinates(
       [...usedCoordinates, coordinateIndex].sort((a, b) => b - a)
     );
