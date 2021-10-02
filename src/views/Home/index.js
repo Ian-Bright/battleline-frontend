@@ -1,6 +1,7 @@
 import { createUseStyles } from "react-jss";
 import { useState } from "react";
 import { useHistory } from "react-router";
+import { BattlelineLocation } from "../../Locations";
 
 const useStyles = createUseStyles({
   cta: {
@@ -30,7 +31,17 @@ const useStyles = createUseStyles({
     lineHeight: "59px",
   },
   input: {
+    alignItems: "center",
+    background: "#C4C4C4",
+    display: "flex",
     width: "306px",
+    "& input": {
+      background: "transparent",
+      border: "none",
+      fontSize: "32px",
+      outline: "none",
+      width: "100%",
+    },
   },
   organization: {
     fontSize: "24px",
@@ -78,15 +89,24 @@ export default function Home() {
           <div className={styles.cta} style={{ marginRight: "20px" }}>
             Learn More
           </div>
-          <div className={styles.cta} style={{ width: "141px" }}>
+          <div
+            className={styles.cta}
+            style={{ width: "141px" }}
+            onClick={() => setPlay(true)}
+          >
             Play
           </div>
         </div>
       ) : (
         <div style={{ display: "flex", maxWidth: "487px" }}>
-          <div className={styles.cta} onClick={() => setPlay(true)}>
-            Next
+          <div className={styles.input}>
+            <input
+              onChange={(e) => setText(e.target.value)}
+              value={text}
+              type="text"
+            />
           </div>
+          <div className={styles.cta} onClick={() => history.push(BattlelineLocation)}>Next</div>
         </div>
       )}
     </div>

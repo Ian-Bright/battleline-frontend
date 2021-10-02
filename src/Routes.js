@@ -1,12 +1,18 @@
 import { Route, Switch } from "react-router-dom";
-import { RootLocation } from "./Locations";
+import { BattlelineLocation, RootLocation } from "./Locations";
 import Home from "./views/Home";
+import Game from "./views/Game";
 
 const ROUTES = [
   {
     component: Home,
     exact: true,
     path: RootLocation,
+  },
+  {
+    component: Game,
+    exact: true,
+    path: BattlelineLocation,
   },
 ];
 
