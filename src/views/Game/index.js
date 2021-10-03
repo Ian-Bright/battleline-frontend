@@ -206,8 +206,9 @@ export default function Game() {
       }
     } else {
       if (selected.front <= selected.end) {
+        console.log("SELECTED FRONT: ", selected.front);
         if (
-          (pos + selected.front) % 6 === 1 &&
+          (pos + selected.front - 6) % 6 === 0 &&
           pos >= selected.front &&
           pos <= selected.end
         ) {
@@ -306,14 +307,14 @@ export default function Game() {
       <div className={styles.right}>
         <div className={styles.heading}>BATTLELINE</div>
         <div className={styles.moveContainer}>
-          <div className={styles.top}>Place Ships</div>
+          <div className={styles.top}>Place Ship</div>
           {!showConsole ? (
             <>
               <div className={styles.body}>
-                Placing your ships adds their position to the system of record.{" "}
+                Placing your ship adds its position to the system of record.{" "}
                 <br />
                 <br />
-                Drag them to the desired location in your system of record
+                Select two squares on grid to place ship.
               </div>
               <div style={{ display: "flex", justifyContent: "center" }}>
                 <div className={styles.cta} style={{ marginRight: "15px" }}>

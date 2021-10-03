@@ -22,6 +22,7 @@ const useStyles = createUseStyles({
     fontWeight: 400,
     lineHeight: "38px",
     padding: "13px 43px",
+    textAlign: "center",
   },
   ctaContainer: {
     display: "flex",
@@ -142,11 +143,13 @@ export default function Home() {
         );
         const data = await res.json();
         const { id: rinkeby_id } = data[1];
-        const payload = {
-          id: rinkeby_id,
-        };
-        console.log("PAYLOAD: ", payload);
-        const contractRes = await deployContract(token, rinkeby_id);
+        // const payload = {
+        //   id: rinkeby_id,
+        //   name: "SimpleStorage",
+        //   address: "0x6f895FcC6D5c030C6DA7e43e9773D60139dbefc2",
+        // };
+        // const contractRes = await deployContract(token, rinkeby_id);
+        history.push("/battleline");
       }
     } catch (err) {
       setError(true);
@@ -184,7 +187,7 @@ export default function Home() {
         </div>
       ) : (
         <>
-          <div>Email </div>
+          <div>Email: </div>
           <div className={styles.input} style={{ marginTop: "10px" }}>
             <input
               onChange={(e) => setEmail(e.target.value)}
@@ -193,7 +196,7 @@ export default function Home() {
             />
           </div>
           <div style={{ marginTop: "10px" }}>Password:</div>
-          <div className={styles.input}>
+          <div className={styles.input} style={{ marginTop: "10px" }}>
             <input
               onChange={(e) => setPassword(e.target.value)}
               type="password"
