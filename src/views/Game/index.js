@@ -126,6 +126,7 @@ export default function Game() {
   const [showConsole, setShowConsole] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [usedCoordinates, setUsedCoordinates] = useState([]);
+  const [validPositions, setValidPositions] = useState([]);
   const styles = useStyles();
 
   const bothSelected = useMemo(() => {
@@ -136,7 +137,22 @@ export default function Game() {
     return coordinate.col && coordinate.row;
   }, [coordinate]);
 
-  const calculateValidPositions = () => {};
+  //   const calculateValidPositions = (pos) => {
+  //     const valid = [];
+  //     for (let i = 1; i < 36; i++) {
+  //       if (i == pos + 2 || i === pos - 2) {
+  //         valid.push(i);
+  //       }
+  //     }
+  //     setValidPositions(valid);
+  //   };
+
+  const handleSelect = (pos) => {
+    selectPosition(pos);
+    if (!selected.front) {
+      // calculateValidPositions(pos);
+    }
+  };
 
   const launch = () => {
     setCoordinate({ col: null, row: null });
@@ -145,7 +161,7 @@ export default function Game() {
       `Launching ZKP ${coordinate.col}${coordinate.row}`,
     ]);
     const coordinateIndex = Number(
-      ([coordinate.col].toString().charCodeAt(0) - 65) + coordinate.row * 6
+      [coordinate.col].toString().charCodeAt(0) - 65 + coordinate.row * 6
     );
     setUsedCoordinates(
       [...usedCoordinates, coordinateIndex].sort((a, b) => b - a)
@@ -175,7 +191,45 @@ export default function Game() {
     }
   };
 
-  console.log("USED COORDINATES: ", usedCoordinates);
+  const shipPath = (pos) => {
+    if (!selected.front || !selected.end) return false;
+    if (Math.abs(selected.front - selected.end) < 6) {
+      if (selected.front <= selected.end) {
+        if (pos >= selected.front && pos <= selected.end) {
+          return true;
+        }
+      }
+      if (selected.front >= selected.end) {
+        if (pos >= selected.end && pos <= selected.front) {
+          return true;
+        }
+      }
+    } else {
+      if (selected.front <= selected.end) {
+        if (
+          (pos + selected.front) % 6 === 1 &&
+          pos >= selected.front &&
+          pos <= selected.end
+        ) {
+          return true;
+        }
+      }
+    }
+
+    return false;
+  };
+
+  //   const validPositionHelper = (seen, pos) => {
+  //     const stop = pos < 0 || pos > 36 || seen.includes(pos);
+  //     // const invalid = pos + 1;
+  //     // if(!invalid) {
+  //     //     setValidPositions([...validPositions, pos]);
+  //     // }
+  //     if (stop) return;
+  //     seen.push(pos);
+  //     validPositionHelper(seen, pos - 1);
+  //     validPositionHelper(seen, pos + 1);
+  //   };
 
   return (
     <div className={styles.container}>
@@ -214,15 +268,25 @@ export default function Game() {
                     <div
                       className={styles.square}
                       onClick={() =>
-                        !bothSelected &&
-                        selectPosition((index + 1) * 6 + index2)
+                        !bothSelected && handleSelect((index + 1) * 6 + index2)
                       }
-                      style={{ cursor: !bothSelected ? "pointer" : "default" }}
+                      style={{
+                        background: shipPath((index + 1) * 6 + index2)
+                          ? "#C4C4C4"
+                          : "#FFFFFF",
+                        cursor: !bothSelected ? "pointer" : "default",
+                      }}
                     >
                       {isSelected((index + 1) * 6 + index2) && (
                         <div
                           className={styles.dot}
                           style={{ background: "#C4C4C4" }}
+                        />
+                      )}
+                      {validPositions.includes((index + 1) * 6 + index2) && (
+                        <div
+                          className={styles.dot}
+                          style={{ background: "#E5CF27" }}
                         />
                       )}
                       {usedCoordinates.includes((index + 1) * 6 + index2) && (
